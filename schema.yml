@@ -1,6 +1,6 @@
 
 version: 0.1.0
-schema-diff: minor
+schema_diff: minor
 
 structs:
   UserPayload:
@@ -19,7 +19,6 @@ structs:
 
 endpoints:
   get_user: 
-    method: GET
-    input: 
-      user:UserPayload 
-    returns: User | Error;
+      method: GET
+      input: UserPayload 
+      returns: User | Error

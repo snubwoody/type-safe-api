@@ -1,3 +1,24 @@
+use std::{collections::HashMap, fs};
+
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug,Serialize,Deserialize)]
+struct ApiSchema{
+	version: String,
+	schema_diff: String,
+	endpoints: HashMap<String,Endpoint>
+}
+
+#[derive(Debug,Serialize,Deserialize)]
+struct Endpoint{
+	method:String,
+	input: String,
+	returns: String
+}
+
 fn main() {
-    println!("Hello, world!");
+	let contents = fs::read_to_string("../schema.yml").unwrap();
+	let data:ApiSchema = serde_yaml::from_str(&contents).unwrap();
+	
+	println!("{:#?}",data);
 }

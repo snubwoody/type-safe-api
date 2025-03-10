@@ -7,3 +7,5 @@ so basically we have a schema file that describes all the endpoints, their input
 then we also have a compiler that compiles your data from whatever language and then sends it over the network as bytes or some low storage format, then the client 'un-compiles' it this way we are sure to have type safe api's thoughts?
 
 i think i could include a schema diff in the schema file, so either major, minor, patch or none, which describes the difference level the client is willing to accept?
+
+Allow multiple files to be combined into one
