@@ -1,0 +1,25 @@
+
+version: 0.1.0
+schema-diff: minor
+
+structs:
+  UserPayload:
+    id: string
+
+  User:
+  id: int,
+  name: option<string>,
+  email: string,
+  created_at: datetime
+
+  Error:
+    description: string,
+    details: option<string>,
+    code: int
+
+endpoints:
+  get_user: 
+    method: GET
+    input: 
+      user:UserPayload 
+    returns: User | Error;
