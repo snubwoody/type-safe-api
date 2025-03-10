@@ -2,3 +2,6 @@
 resolver = '3'
 
 members = [ "code_generation",'compiler']
+
+[workspace.dependencies]
+http = "1.2.0"

@@ -6,15 +6,34 @@ use serde::{Deserialize, Serialize};
 struct ApiSchema{
 	version: String,
 	schema_diff: String,
-	structs: HashMap<String,HashMap<String,String>>,
+	structs: HashMap<String,HashMap<String,SchemaType>>,
 	endpoints: HashMap<String,Endpoint>,
 }
 
+/// A url endpoint
 #[derive(Debug,Serialize,Deserialize)]
 struct Endpoint{
-	method:String,
+	method: HttpMethod,
 	input: String,
 	returns: String
+}
+
+
+#[derive(Debug,Serialize,Deserialize)]
+#[serde(rename_all="lowercase")]
+enum SchemaType{
+	Int,
+	String,
+	DateTime,
+}
+
+#[derive(Debug,Serialize,Deserialize)]
+#[serde(rename_all="UPPERCASE")]
+enum HttpMethod{
+	Get,
+	Post,
+	Patch,
+	Delete
 }
 
 fn main() {

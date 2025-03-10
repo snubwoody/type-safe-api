@@ -8,13 +8,13 @@ structs:
 
   User:
     id: int
-    name: option<string>
+    name?: string
     email: string
     created_at: datetime
 
   Error:
-    description: string,
-    details: option<string>,
+    description: string
+    details?: string
     code: int
 
 endpoints:
