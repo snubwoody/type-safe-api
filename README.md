@@ -10,8 +10,17 @@ i think i could include a schema diff in the schema file, so either major, minor
 
 Allow multiple files to be combined into one
 
+## Schema
+
+- version: The version of the schema
+- schema_diff: The maximum sem-ver difference allowed
+
 ## Schema Types
 
 - string
 - int
 - datetime
+
+## TODO
+
+- Add include directive for file splitting

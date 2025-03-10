@@ -29,7 +29,7 @@ fn parse_structs(schema:&ApiSchema) -> proc_macro2::TokenStream{
 		let struct_fields = parse_struct_fields(value);
 
 		let _struct = quote! {
-			struct #struct_name{
+			pub struct #struct_name{
 				#struct_fields
 			}
 		};
@@ -49,7 +49,7 @@ fn parse_struct_fields(fields: &HashMap<String,SchemaType>) -> proc_macro2::Toke
 		let field_type = value.parse();	
 		
 		let field = quote! {
-			#field_name: #field_type
+			pub #field_name: #field_type
 		};
 
 		struct_fields.push(field);
