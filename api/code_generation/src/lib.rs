@@ -58,8 +58,6 @@ fn parse_structs(schema:&ApiSchema) -> proc_macro2::TokenStream{
 fn parse_struct_fields(fields: &HashMap<String,SchemaType>) -> proc_macro2::TokenStream{
 	let mut struct_fields = vec![];
 	for (_,(key,value)) in fields.iter().enumerate(){
-		println!("{:#?}",key);
-		println!("{:#?}",value);
 		let field_name = syn::Ident::new(&key, Span::call_site());	
 		let field_type = value.parse();	
 		

@@ -6,7 +6,12 @@ edition = "2024"
 [dependencies]
 serde.workspace = true
 serde_yaml.workspace = true
+axum.workspace = true
+tokio.workspace = true
+tower.workspace = true
+tower-http.workspace = true
 core_types = {path = "../core_types"}
 code_generation = {path = "../code_generation"}
 http.workspace = true
 sha256 = "1.6.0"
+futures-util = "0.3.31"
