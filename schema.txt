@@ -1,3 +1,20 @@
 
+// Sem-ver
+version: 0.1.0
 // The level of sem-ver difference the client is willing to accept
 schema-diff: minor
+
+struct UserPayload{
+  id: string
+}
+
+struct User{
+  id: int,
+  name: option<string>,
+  email: string,
+  created_at: datetime
+}
+
+
+// Get a user by their id
+get user(user:UserPayload) -> User;
