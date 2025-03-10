@@ -1,0 +1,3 @@
+
+// The level of sem-ver difference the client is willing to accept
+schema-diff: minor
