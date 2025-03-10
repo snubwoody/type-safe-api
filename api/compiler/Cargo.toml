@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-serde = { version = "1.0.219", features = ["derive"] }
-serde_yaml = "0.9.34"
+serde.workspace = true
+serde_yaml.workspace = true
+core_types = {path = "../core_types"}
+code_generation = {path = "../code_generation"}
 http.workspace = true

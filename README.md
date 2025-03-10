@@ -9,3 +9,9 @@ then we also have a compiler that compiles your data from whatever language and 
 i think i could include a schema diff in the schema file, so either major, minor, patch or none, which describes the difference level the client is willing to accept?
 
 Allow multiple files to be combined into one
+
+## Schema Types
+
+- string
+- int
+- datetime

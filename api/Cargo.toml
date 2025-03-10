@@ -1,7 +1,9 @@
 [workspace]
 resolver = '3'
 
-members = [ "code_generation",'compiler']
+members = [ "code_generation",'compiler', "core_types"]
 
 [workspace.dependencies]
 http = "1.2.0"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_yaml = "0.9.34"

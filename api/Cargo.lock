@@ -20,7 +20,17 @@ dependencies = [
 name = "compiler"
 version = "0.1.0"
 dependencies = [
+ "code_generation",
+ "core_types",
  "http",
+ "serde",
+ "serde_yaml",
+]
+
+[[package]]
+name = "core_types"
+version = "0.1.0"
+dependencies = [
  "serde",
  "serde_yaml",
 ]
