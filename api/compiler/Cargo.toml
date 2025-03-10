@@ -9,3 +9,4 @@ serde_yaml.workspace = true
 core_types = {path = "../core_types"}
 code_generation = {path = "../code_generation"}
 http.workspace = true
+sha256 = "1.6.0"

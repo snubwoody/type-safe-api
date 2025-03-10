@@ -8,5 +8,6 @@ http = "1.2.0"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_yaml = "0.9.34"
 quote = "1.0.39"
+axum = "0.8.1"
 syn = "2.0.100"
 proc-macro2 = "1.0.94"

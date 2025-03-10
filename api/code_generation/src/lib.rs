@@ -4,6 +4,21 @@ use std::{collections::HashMap, fs};
 use core_types::{ApiSchema, SchemaType};
 
 /// Generate code from a schema file
+/// ```yaml
+/// structs:
+///   User:
+///     id: int
+///     name: string
+///     email: string
+/// ```
+/// Generated code:
+/// ```
+/// struct User{
+/// 	id: i32,
+/// 	name: String,
+/// 	email: String
+/// }
+/// ```
 #[proc_macro]
 pub fn generate_code(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let path = input.to_string().replace("\"", "");
