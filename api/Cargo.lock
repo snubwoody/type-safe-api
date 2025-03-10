@@ -12,7 +12,10 @@ checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 name = "code_generation"
 version = "0.1.0"
 dependencies = [
+ "core_types",
  "quote",
+ "serde",
+ "serde_yaml",
  "syn",
 ]
 

@@ -6,6 +6,9 @@ edition = "2024"
 [dependencies]
 quote = "1.0.39"
 syn = "2.0.100"
+serde.workspace = true
+serde_yaml.workspace = true
+core_types = {path = "../core_types"}
 
 [lib]
 proc-macro = true
