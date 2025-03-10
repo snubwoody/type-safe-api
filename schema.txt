@@ -15,6 +15,11 @@ struct User{
   created_at: datetime
 }
 
+struct Error{
+  description: string,
+  details: option<string>,
+  code: int
+}
 
 // Get a user by their id
-get user(user:UserPayload) -> User;
+get user(user:UserPayload) -> User | Error;
