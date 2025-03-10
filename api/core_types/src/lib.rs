@@ -3,18 +3,18 @@ use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ApiSchema {
-    version: String,
-    schema_diff: String,
-    structs: HashMap<String, HashMap<String, SchemaType>>,
-    endpoints: HashMap<String, Endpoint>,
+    pub version: String,
+    pub schema_diff: String,
+    pub structs: HashMap<String, HashMap<String, SchemaType>>,
+    pub endpoints: HashMap<String, Endpoint>,
 }
 
 /// A url endpoint
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Endpoint {
-    method: HttpMethod,
-    input: String,
-    returns: String,
+    pub method: HttpMethod,
+    pub input: String,
+    pub returns: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

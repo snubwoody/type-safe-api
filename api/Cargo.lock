@@ -13,6 +13,7 @@ name = "code_generation"
 version = "0.1.0"
 dependencies = [
  "core_types",
+ "proc-macro2",
  "quote",
  "serde",
  "serde_yaml",
