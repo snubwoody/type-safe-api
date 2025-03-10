@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use quote::quote;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ApiSchema {
@@ -22,7 +23,16 @@ pub struct Endpoint {
 pub enum SchemaType {
     Int,
     String,
-    DateTime,
+}
+
+impl SchemaType{
+	/// Parse into a native rust type
+	pub fn parse(&self) -> proc_macro2::TokenStream{
+		match &self {
+			&Self::Int => quote!{ i32 },
+			&Self::String => quote!{ String },
+		}
+	}
 }
 
 #[derive(Debug, Serialize, Deserialize)]

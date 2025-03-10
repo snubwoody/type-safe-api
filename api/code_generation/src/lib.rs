@@ -1,7 +1,7 @@
 use proc_macro2::Span;
 use quote::quote;
-use std::fs;
-use core_types::ApiSchema;
+use std::{collections::HashMap, fs};
+use core_types::{ApiSchema, SchemaType};
 
 /// Generate code from a schema file
 #[proc_macro]
@@ -12,9 +12,6 @@ pub fn generate_code(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
     let schema: ApiSchema = serde_yaml::from_str(&contents).unwrap();
 
 	let structs = parse_structs(&schema);
-
-	println!("{:#?}",structs);
-
 
     let expanded = quote! {
 		#structs
@@ -27,12 +24,13 @@ fn parse_structs(schema:&ApiSchema) -> proc_macro2::TokenStream{
 	let mut structs = vec![];
 	
 	for (_,(key,value)) in schema.structs.iter().enumerate(){
-		println!("{:#?}{:#?}",key,value);
 		let struct_name = syn::Ident::new(&key, Span::call_site());
 		
+		let struct_fields = parse_struct_fields(value);
+
 		let _struct = quote! {
 			struct #struct_name{
-
+				#struct_fields
 			}
 		};
 
@@ -40,4 +38,22 @@ fn parse_structs(schema:&ApiSchema) -> proc_macro2::TokenStream{
 	}
 
 	quote! {#(#structs)*}
+}
+
+fn parse_struct_fields(fields: &HashMap<String,SchemaType>) -> proc_macro2::TokenStream{
+	let mut struct_fields = vec![];
+	for (_,(key,value)) in fields.iter().enumerate(){
+		println!("{:#?}",key);
+		println!("{:#?}",value);
+		let field_name = syn::Ident::new(&key, Span::call_site());	
+		let field_type = value.parse();	
+		
+		let field = quote! {
+			#field_name: #field_type
+		};
+
+		struct_fields.push(field);
+	}
+
+	quote! {#(#struct_fields),*}
 }

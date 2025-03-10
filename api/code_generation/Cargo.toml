@@ -4,12 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-quote = "1.0.39"
-syn = "2.0.100"
+proc-macro2.workspace = true
+quote.workspace = true
+syn.workspace = true
 serde.workspace = true
 serde_yaml.workspace = true
 core_types = {path = "../core_types"}
-proc-macro2 = "1.0.94"
 
 [lib]
 proc-macro = true
