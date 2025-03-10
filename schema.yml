@@ -7,9 +7,9 @@ structs:
     id: string
 
   User:
-    id: int,
-    name: option<string>,
-    email: string,
+    id: int
+    name: option<string>
+    email: string
     created_at: datetime
 
   Error:

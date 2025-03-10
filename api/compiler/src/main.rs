@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 struct ApiSchema{
 	version: String,
 	schema_diff: String,
-	structs: HashMap<String,String>,
+	structs: HashMap<String,HashMap<String,String>>,
 	endpoints: HashMap<String,Endpoint>,
 }
 

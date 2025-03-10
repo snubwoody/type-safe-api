@@ -3,6 +3,14 @@
 version = 4
 
 [[package]]
+name = "code_generation"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "compiler"
 version = "0.1.0"
 dependencies = [
