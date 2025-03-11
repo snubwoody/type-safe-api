@@ -1,5 +1,6 @@
+use compiler::ts::typescript_codegen;
 
 
 fn main(){
-	println!("Hi");
+	typescript_codegen("../..");
 }

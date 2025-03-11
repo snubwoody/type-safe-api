@@ -20,7 +20,7 @@ use core_types::{ApiSchema, SchemaType};
 /// }
 /// ```
 #[proc_macro]
-pub fn generate_code(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+pub fn code_gen(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let path = input.to_string().replace("\"", "");
 	
 	let contents = fs::read_to_string(path).unwrap();
