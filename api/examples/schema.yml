@@ -17,8 +17,9 @@ structs:
     code: int
 
 endpoints:
-  get_user:
+  create_user:
     uri: /user 
-    method: GET
+    method: POST
     input: UserPayload 
-    returns: User | Error
+    returns: User
+

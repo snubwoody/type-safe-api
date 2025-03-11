@@ -1,6 +1,8 @@
 //! Code generation for typescript
 use std::{collections::HashMap, fs};
 use core_types::{ApiSchema, SchemaType};
+mod class;
+pub use class::*;
 
 /// Represents a typescript interface
 /// 
@@ -115,6 +117,7 @@ pub fn codegen(config_path:&str,file_path:&str){
 	let contents = fs::read_to_string(config_path).unwrap();
 	let schema: ApiSchema = serde_yaml::from_str(&contents).unwrap();
 	let mut interfaces = vec![];
+	dbg!(&schema);
 
 	for (_,(key,value)) in schema.structs.iter().enumerate(){
 		let mut interface = Interface::new(&key);
