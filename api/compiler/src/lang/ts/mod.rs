@@ -23,6 +23,8 @@
 use std::{collections::HashMap, fs};
 use core_types::{ApiSchema, SchemaType};
 mod class;
+mod method;
+pub use method::*;
 pub use class::*;
 
 /// Represents a typescript interface
