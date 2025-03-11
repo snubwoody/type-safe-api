@@ -68,7 +68,6 @@ where
 				return Box::pin(async move{Ok(response)});
 			}
 		}
-		println!("{:#?}",req);
 
 		let future = self.inner.call(req);
 		

@@ -24,3 +24,5 @@ Allow multiple files to be combined into one
 ## TODO
 
 - Add include directive for file splitting
+- Add support for swagger files
+- Add builders for all types

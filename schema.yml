@@ -18,6 +18,6 @@ structs:
 
 endpoints:
   get_user: 
-      method: GET
-      input: UserPayload 
-      returns: User | Error
+    method: GET
+    input: UserPayload 
+    returns: User | Error

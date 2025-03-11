@@ -14,3 +14,7 @@ compiler = {path = "../compiler"}
 [[example]]
 name = "example"
 path = "example.rs"
+
+[[example]]
+name = "server"
+path = "server.rs"
