@@ -1,6 +1,5 @@
-use compiler::ts::typescript_codegen;
-
+use compiler::ts::codegen;
 
 fn main(){
-	typescript_codegen("../..");
+	codegen("examples/schema.yml");
 }
