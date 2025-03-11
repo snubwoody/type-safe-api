@@ -3,6 +3,15 @@ use std::{collections::HashMap, fs};
 use core_types::{ApiSchema, SchemaType};
 
 /// Represents a typescript interface
+/// 
+/// ```typescript
+/// interface User{
+/// 	id: string,
+/// 	email: string,
+/// 	name?: string,
+/// 	createdAt: string,
+/// }
+/// ```
 #[derive(Debug)]
 struct Interface{
 	name: String,
@@ -30,7 +39,7 @@ impl Interface {
 	/// Generate a typescript interface as a string
 	fn gen_code(&self) -> String{
 		let mut contents = String::new();
-		contents.push_str(&format!("interface {}{{\n",self.name));
+		contents.push_str(&format!("export interface {}{{\n",self.name));
 
 		for field in &self.fields{
 			contents.push_str(&format!("{}",field));
@@ -41,6 +50,7 @@ impl Interface {
 	}
 }
 
+/// A typescript interface field
 #[derive(Debug)]
 struct InterfaceField{
 	name: String,
@@ -59,7 +69,8 @@ impl std::fmt::Display for InterfaceField{
 	}
 }
 
-#[derive(Debug)]
+/// A typescript type
+#[derive(Debug,Clone,PartialEq, Eq, PartialOrd, Ord)]
 enum Type{
 	/// `number`
 	Number,
@@ -68,12 +79,11 @@ enum Type{
 	/// `boolean`
 	Boolean,
 	/// `T[]`
-	Array(Box<Type>)
+	Array(Box<Type>),
 }
 
 impl std::fmt::Display for Type{
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		
 		match self {
 			Self::Number => f.write_str("number"), 
 			Self::String => f.write_str("string"), 
@@ -82,7 +92,6 @@ impl std::fmt::Display for Type{
 		}
 	}
 }
-
 
 impl From<SchemaType> for Type {
 	fn from(value: SchemaType) -> Self {
@@ -118,7 +127,6 @@ pub fn codegen(config_path:&str,file_path:&str){
 	for interface in interfaces{
 		contents.push_str(&interface.gen_code());
 	}
-	println!("{:#?}",contents);
 	
 	fs::write(file_path, contents).unwrap();
 }
@@ -134,4 +142,19 @@ fn parse_interface_fields(values: &HashMap<String,SchemaType>) -> Vec<InterfaceF
 	}
 
 	fields
+}
+
+#[cfg(test)]
+mod tests{
+    use super::*;
+
+	#[test]
+	fn type_display(){
+		assert_eq!(format!("{}",Type::Number),"number");
+		assert_eq!(format!("{}",Type::String),"string");
+		assert_eq!(format!("{}",Type::Boolean),"boolean");
+
+		let number_array = Type::Array(Box::new(Type::Number));
+		assert_eq!(format!("{}",number_array),"number[]");
+	}
 }

@@ -27,3 +27,4 @@ Allow multiple files to be combined into one
 - Add support for swagger files
 - Add builders for all types
 - Add array types to the schema
+- Convert to camel case or snake case depending on the language
