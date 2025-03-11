@@ -17,7 +17,8 @@ structs:
     code: int
 
 endpoints:
-  get_user: 
+  get_user:
+    uri: /user 
     method: GET
     input: UserPayload 
     returns: User | Error

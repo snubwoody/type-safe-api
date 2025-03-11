@@ -13,6 +13,7 @@ pub struct ApiSchema {
 /// A url endpoint
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Endpoint {
+	pub uri: String,
     pub method: HttpMethod,
     pub input: String,
     pub returns: String,

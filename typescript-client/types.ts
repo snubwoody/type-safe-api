@@ -1,8 +1,8 @@
 export interface User{
-	created_at: string,
 	id: number,
-	name: string,
+	created_at: string,
 	email: string,
+	name: string,
 }
 
 export interface UserPayload{
@@ -11,7 +11,7 @@ export interface UserPayload{
 
 export interface Error{
 	details: string,
-	description: string,
 	code: number,
+	description: string,
 }
 
