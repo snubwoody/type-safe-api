@@ -1,3 +1,7 @@
+//! Type safe api's
+//! This library uses yaml schema files to autogenerate code for apis
+//! it also validates the response types so you are always guaranteed to 
+//! have valid types
 mod lang;
 pub use lang::*;
 use axum::{body::Body, extract::Request, response::Response};
@@ -5,6 +9,7 @@ use futures_util::future::BoxFuture;
 use http::StatusCode;
 use tower::{Layer, Service};
 
+/// Validated that incoming requests are using the same schema
 #[derive(Clone)]
 pub struct ValidationLayer{
 	checksum: String

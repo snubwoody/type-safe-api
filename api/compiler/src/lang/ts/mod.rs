@@ -1,4 +1,25 @@
 //! Code generation for typescript
+//! 
+//! # Example 
+//! ```yaml
+//! struct User{
+//! 	id: int,
+//! 	name: string,
+//! 	email: string,
+//! 	created_at: string,
+//! }
+//! ```
+//! 
+//! output:
+//! 
+//! ```typescript
+//! interface User{
+//! 	id: number,
+//! 	name: string,
+//! 	email: string,
+//! 	created_at: string
+//! }
+//! ```
 use std::{collections::HashMap, fs};
 use core_types::{ApiSchema, SchemaType};
 mod class;
@@ -17,7 +38,7 @@ pub use class::*;
 #[derive(Debug)]
 struct Interface{
 	name: String,
-	fields: Vec<InterfaceField>
+	fields: Vec<Field>
 }
 
 impl Interface {
@@ -26,12 +47,12 @@ impl Interface {
 		Self { name: String::from(name), fields: vec![] }
 	}
 
-	fn push_field(&mut self,field: InterfaceField){
+	fn push_field(&mut self,field: Field){
 		self.fields.push(field);
 	}
 
 	fn push_fields<I>(&mut self,fields: I)
-	where I: IntoIterator<Item = InterfaceField>
+	where I: IntoIterator<Item = Field>
 	{
 		for field in fields.into_iter(){
 			self.fields.push(field);
@@ -52,20 +73,20 @@ impl Interface {
 	}
 }
 
-/// A typescript interface field
-#[derive(Debug)]
-struct InterfaceField{
+/// A typescript interface or class field
+#[derive(Debug,Clone,PartialEq, Eq, PartialOrd, Ord)]
+pub struct Field{
 	name: String,
 	_type: Type 
 }
 
-impl InterfaceField {
+impl Field {
 	fn new(name:&str, _type: Type) -> Self{
 		Self { name: String::from(name), _type }
 	}
 }
 
-impl std::fmt::Display for InterfaceField{
+impl std::fmt::Display for Field{
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		f.write_str(&format!("\t{}: {},\n",self.name,self._type))
 	}
@@ -73,7 +94,7 @@ impl std::fmt::Display for InterfaceField{
 
 /// A typescript type
 #[derive(Debug,Clone,PartialEq, Eq, PartialOrd, Ord)]
-enum Type{
+pub enum Type{
 	/// `number`
 	Number,
 	/// `string`
@@ -117,7 +138,6 @@ pub fn codegen(config_path:&str,file_path:&str){
 	let contents = fs::read_to_string(config_path).unwrap();
 	let schema: ApiSchema = serde_yaml::from_str(&contents).unwrap();
 	let mut interfaces = vec![];
-	dbg!(&schema);
 
 	for (_,(key,value)) in schema.structs.iter().enumerate(){
 		let mut interface = Interface::new(&key);
@@ -135,12 +155,12 @@ pub fn codegen(config_path:&str,file_path:&str){
 }
 
 /// Parse typescript interface fields
-fn parse_interface_fields(values: &HashMap<String,SchemaType>) -> Vec<InterfaceField>{
+fn parse_interface_fields(values: &HashMap<String,SchemaType>) -> Vec<Field>{
 	let mut fields = vec![];
 
 	for (_,(key,value)) in values.iter().enumerate(){
 		let _type = Type::from(value);
-		let field = InterfaceField::new(&key, _type);
+		let field = Field::new(&key, _type);
 		fields.push(field);
 	}
 
