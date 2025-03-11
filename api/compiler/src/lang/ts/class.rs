@@ -26,6 +26,37 @@ pub struct Method{
 	body: String,
 }
 
+impl std::fmt::Display for Method{
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		if self.is_async{
+			write!(f,"async ")?;
+		}
+		write!(f,"{}",self.identifier)?;
+		write!(f,"(")?;
+		
+		for param in &self.parameters{
+			write!(f,"{},",param)?;
+		}
+		
+		write!(f,")")?;
+		match &self.returns {
+			Some(_type) => {
+				if self.is_async{
+					write!(f,": Promise<{}> {{\n",_type)?;
+				}else {
+					write!(f,": {} {{\n",_type)?;
+				}
+			},
+			None =>{
+				write!(f," {{")?
+			}
+		}
+		
+		write!(f,"{}",self.body)?;
+		write!(f,"\n}}")
+	}
+}
+
 /// Builder pattern for [`Method`]
 /// 
 /// # Example
@@ -51,6 +82,17 @@ impl MethodBuilder{
 	/// 	.returns(Type::Boolean)
 	/// 	.add_param("player_id",Type::Number)
 	/// 	.build();
+	/// ```
+	/// 
+	/// The generated typescript code would be 
+	/// 
+	/// ```typescript
+	/// // Dummy class 
+	/// class World{
+	/// 	async is_player_alive(player_id: number): Promise<boolean>{
+	/// 
+	/// 	}
+	/// }
 	/// ```
 	pub fn new(identifier: &str) -> Self{
 		Self{
@@ -98,11 +140,36 @@ impl MethodBuilder{
 	}
 }
 
+struct FunctionBody{
+
+}
+
 #[cfg(test)]
 mod tests{
+	use super::*;
 
 	#[test]
-	fn method_display(){
+	fn async_method(){
+		let method = MethodBuilder::new("get_user")
+			.is_async()
+			.add_param("uid", Type::Number)
+			.returns(Type::Custom("User".to_string()))
+			.body("")
+			.build();
 
+		let body = concat!("async get_user(uid: number,): Promise<User> {","\n","\n}");
+		
+		assert_eq!(format!("{}",method),body);
+	}
+
+	#[test]
+	fn sync_method(){
+		let method = MethodBuilder::new("init")
+			.body("")
+			.build();
+
+		let body = concat!("init() {","\n}");
+		
+		assert_eq!(format!("{}",method),body);
 	}
 }

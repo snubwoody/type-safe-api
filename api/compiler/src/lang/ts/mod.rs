@@ -65,7 +65,7 @@ impl Interface {
 		contents.push_str(&format!("export interface {}{{\n",self.name));
 
 		for field in &self.fields{
-			contents.push_str(&format!("{}",field));
+			contents.push_str(&format!("\t{},\n",field));
 		}
 		contents.push_str("}\n\n");
 
@@ -88,7 +88,7 @@ impl Field {
 
 impl std::fmt::Display for Field{
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		f.write_str(&format!("\t{}: {},\n",self.name,self._type))
+		f.write_str(&format!("{}: {}",self.name,self._type))
 	}
 }
 
@@ -103,6 +103,7 @@ pub enum Type{
 	Boolean,
 	/// `T[]`
 	Array(Box<Type>),
+	Custom(String),
 }
 
 impl std::fmt::Display for Type{
@@ -112,6 +113,7 @@ impl std::fmt::Display for Type{
 			Self::String => f.write_str("string"), 
 			Self::Boolean => f.write_str("boolean"), 
 			Self::Array(_type) => f.write_str(&format!("{}[]",_type)), 
+			Self::Custom(_type) => f.write_str(&format!("{}",_type)), 
 		}
 	}
 }

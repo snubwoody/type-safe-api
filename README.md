@@ -26,7 +26,6 @@ depending on the status code
 ## TODO
 
 - Add include directive for file splitting
-- Add support for swagger files
+- Add an option to define the client name
 - Add builders for all types
-- Add array types to the schema
 - Convert to camel case or snake case depending on the language
