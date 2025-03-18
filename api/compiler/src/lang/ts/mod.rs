@@ -138,9 +138,9 @@ impl From<&SchemaType> for Type {
 	}
 }
 
-pub fn codegen(config_path:&str,file_path:&str){
-	let contents = fs::read_to_string(config_path).unwrap();
-	let schema: ApiSchema = serde_yaml::from_str(&contents).unwrap();
+pub fn codegen(config_path:&str,file_path:&str) -> crate::Result<()>{
+	let contents = fs::read_to_string(config_path)?;
+	let schema: ApiSchema = serde_yaml::from_str(&contents)?;
 	let mut interfaces = vec![];
 
 	for (_,(key,value)) in schema.structs.iter().enumerate(){
@@ -160,7 +160,9 @@ pub fn codegen(config_path:&str,file_path:&str){
 			.is_async();
 	}
 	
-	fs::write(file_path, contents).unwrap();
+	fs::write(file_path, contents)?;
+
+	Ok(())
 }
 
 /// Parse typescript interface fields

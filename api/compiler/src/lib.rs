@@ -3,6 +3,8 @@
 //! it also validates the response types so you are always guaranteed to 
 //! have valid types
 mod lang;
+mod error;
+pub use error::{Error,Result};
 pub use lang::*;
 use axum::{body::Body, extract::Request, response::Response};
 use futures_util::future::BoxFuture;
@@ -46,9 +48,13 @@ where
 {
 	type Response = S::Response;
 	type Error = S::Error;
-	type Future = BoxFuture<'static,Result<Self::Response,Self::Error>>;
+	type Future = BoxFuture<'static,std::result::Result<Self::Response,Self::Error>>;
 
-	fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> std::task::Poll<Result<(), Self::Error>> {
+	fn poll_ready(
+		&mut self, 
+		cx: &mut std::task::Context<'_>
+	) -> std::task::Poll<std::result::Result<(), Self::Error>> 
+	{
 		self.inner.poll_ready(cx)
 	}
 
