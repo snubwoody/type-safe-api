@@ -80,11 +80,11 @@ impl Interface {
 #[derive(Debug,Clone,PartialEq, Eq, PartialOrd, Ord)]
 pub struct Field{
 	name: String,
-	_type: Type 
+	_type: TsType 
 }
 
 impl Field {
-	fn new(name:&str, _type: Type) -> Self{
+	fn new(name:&str, _type: TsType) -> Self{
 		Self { name: String::from(name), _type }
 	}
 }
@@ -97,7 +97,7 @@ impl std::fmt::Display for Field{
 
 /// A typescript type
 #[derive(Debug,Clone,PartialEq, Eq, PartialOrd, Ord)]
-pub enum Type{
+pub enum TsType{
 	/// `number`
 	Number,
 	/// `string`
@@ -105,11 +105,11 @@ pub enum Type{
 	/// `boolean`
 	Boolean,
 	/// `T[]`
-	Array(Box<Type>),
+	Array(Box<TsType>),
 	Custom(String),
 }
 
-impl std::fmt::Display for Type{
+impl std::fmt::Display for TsType{
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
 			Self::Number => f.write_str("number"), 
@@ -121,7 +121,7 @@ impl std::fmt::Display for Type{
 	}
 }
 
-impl From<SchemaType> for Type {
+impl From<SchemaType> for TsType {
 	fn from(value: SchemaType) -> Self {
 		match value {
 			SchemaType::Int | 
@@ -133,7 +133,7 @@ impl From<SchemaType> for Type {
 	}
 }
 
-impl From<&SchemaType> for Type {
+impl From<&SchemaType> for TsType {
 	fn from(value: &SchemaType) -> Self {
 		match value {
 			&SchemaType::Int|
@@ -146,7 +146,7 @@ impl From<&SchemaType> for Type {
 }
 
 
-impl ToTokens for Type{
+impl ToTokens for TsType{
 	fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
 		
 	}
@@ -197,7 +197,7 @@ fn parse_interface_fields(values: &HashMap<String,SchemaType>) -> Vec<Field>{
 	let mut fields = vec![];
 
 	for (_,(key,value)) in values.iter().enumerate(){
-		let _type = Type::from(value);
+		let _type = TsType::from(value);
 		let field = Field::new(&key, _type);
 		fields.push(field);
 	}
@@ -211,11 +211,11 @@ mod tests{
 
 	#[test]
 	fn type_display(){
-		assert_eq!(format!("{}",Type::Number),"number");
-		assert_eq!(format!("{}",Type::String),"string");
-		assert_eq!(format!("{}",Type::Boolean),"boolean");
+		assert_eq!(format!("{}",TsType::Number),"number");
+		assert_eq!(format!("{}",TsType::String),"string");
+		assert_eq!(format!("{}",TsType::Boolean),"boolean");
 
-		let number_array = Type::Array(Box::new(Type::Number));
+		let number_array = TsType::Array(Box::new(TsType::Number));
 		assert_eq!(format!("{}",number_array),"number[]");
 	}
 }

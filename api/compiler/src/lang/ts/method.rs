@@ -1,7 +1,7 @@
 use core_types::Endpoint;
 use quote::quote;
 
-use super::{Field, Type};
+use super::{Field, TsType};
 
 // TODO add jsdoc
 /// A method on a class
@@ -10,7 +10,7 @@ pub struct Method{
 	is_async: bool,
 	identifier: String,
 	parameters: Vec<Field>,
-	returns: Option<Type>,
+	returns: Option<TsType>,
 	body: String,
 }
 
@@ -50,12 +50,12 @@ impl std::fmt::Display for Method{
 /// # Example
 /// 
 /// ```
-/// use compiler::ts::{MethodBuilder,Method,Type};
+/// use compiler::ts::{MethodBuilder,Method,TsType};
 /// 
 /// let method = MethodBuilder::new("is_player_alive")
 /// 	.is_async()
-/// 	.returns(Type::Boolean)
-/// 	.add_param("player_id",Type::Number)
+/// 	.returns(TsType::Boolean)
+/// 	.add_param("player_id",TsType::Number)
 /// 	.build();
 /// ```
 /// 
@@ -74,7 +74,7 @@ pub struct MethodBuilder{
 	is_async: bool,
 	identifier: String,
 	parameters: Vec<Field>,
-	returns: Option<Type>,
+	returns: Option<TsType>,
 	body: String
 }
 
@@ -84,12 +84,12 @@ impl MethodBuilder{
 	/// # Example
 	/// 
 	/// ```
-	/// use compiler::ts::{MethodBuilder,Method,Type};
+	/// use compiler::ts::{MethodBuilder,Method,TsType};
 	/// 
 	/// let method = MethodBuilder::new("is_player_alive")
 	/// 	.is_async()
-	/// 	.returns(Type::Boolean)
-	/// 	.add_param("player_id",Type::Number)
+	/// 	.returns(TsType::Boolean)
+	/// 	.add_param("player_id",TsType::Number)
 	/// 	.build();
 	/// ```
 	/// 
@@ -120,13 +120,13 @@ impl MethodBuilder{
 	}
 
 	/// Set the method's return type
-	pub fn returns(mut self, _type: Type) -> Self{
+	pub fn returns(mut self, _type: TsType) -> Self{
 		self.returns = Some(_type);
 		self
 	}
 	
 	/// Add a parameter to the method
-	pub fn add_param(mut self, identifier: &str,_type: Type) -> Self{
+	pub fn add_param(mut self, identifier: &str,_type: TsType) -> Self{
 		self.parameters.push(Field::new(identifier, _type));
 		self
 	}
@@ -151,8 +151,8 @@ impl MethodBuilder{
 	
 	/// Create a new method from an [`Endpoint`].
 	pub fn from_endpoint(name:&str,endpoint: Endpoint) -> Method{
-		let param_type:Type = endpoint.input.into();
-		let return_type:Type = endpoint.returns.into();
+		let param_type:TsType = endpoint.input.into();
+		let return_type:TsType = endpoint.returns.into();
 
 		let mut method_body = format!(
 			r#"try {{
@@ -179,7 +179,7 @@ impl MethodBuilder{
 			try{
 				const response = await fetch(#uri);
 				if (response.ok){
-					const user: User = await response.json();
+					const user: #return_type = await response.json();
 					return user;
 				}
 				else{
@@ -241,8 +241,8 @@ mod tests{
 	fn async_method(){
 		let method = MethodBuilder::new("get_user")
 			.is_async()
-			.add_param("uid", Type::Number)
-			.returns(Type::Custom("User".to_string()))
+			.add_param("uid", TsType::Number)
+			.returns(TsType::Custom("User".to_string()))
 			.body("")
 			.build();
 

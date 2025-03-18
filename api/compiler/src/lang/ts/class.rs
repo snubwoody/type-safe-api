@@ -1,4 +1,4 @@
-use super::{Field, Type,Method};
+use super::{Field, TsType,Method};
 
 /// A typescript class
 #[derive(Debug,Clone,PartialEq, Eq, PartialOrd, Ord)]
@@ -51,16 +51,16 @@ mod tests{
 	#[test]
 	fn class_display(){
 		let mut class = Class::new("User");
-		class.push_field(Field::new("id", Type::Number));
-		class.push_field(Field::new("email", Type::String));
-		class.push_field(Field::new("user_name", Type::String));
+		class.push_field(Field::new("id", TsType::Number));
+		class.push_field(Field::new("email", TsType::String));
+		class.push_field(Field::new("user_name", TsType::String));
 
 		let id = MethodBuilder::new("id")
-			.returns(Type::Number)
+			.returns(TsType::Number)
 			.build();
 		
 		let username = MethodBuilder::new("user_name")
-			.returns(Type::String)
+			.returns(TsType::String)
 			.build();
 
 		class.push_method(id);
