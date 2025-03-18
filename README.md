@@ -7,9 +7,10 @@
 
 ## Schema Types
 
-- string
-- int
-- datetime
+- `string`
+- `int`
+- `boolean`
+- `T`
 
 ## TODO
 

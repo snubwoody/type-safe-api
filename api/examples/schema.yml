@@ -4,6 +4,11 @@ schema_diff: minor
 structs:
   UserPayload:
     id: string
+  
+  OrderPayload:
+    name: string
+    email: string
+    cart_id: string
 
   User:
     id: int
@@ -18,8 +23,13 @@ structs:
 
 endpoints:
   create_user:
-    uri: https://facebook.com/user 
+    uri: https://example.com/user 
     method: POST
     input: UserPayload 
     returns: User
+  submit_order:
+    uri: https://example.com/order 
+    method: POST
+    input: OrderPayload
+    returns: string
 
