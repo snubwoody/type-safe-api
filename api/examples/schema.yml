@@ -18,7 +18,7 @@ structs:
 
 endpoints:
   create_user:
-    uri: /user 
+    uri: https://facebook.com/user 
     method: POST
     input: UserPayload 
     returns: User

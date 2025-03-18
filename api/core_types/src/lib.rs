@@ -37,7 +37,7 @@ impl ApiSchema{
 pub struct Endpoint {
 	pub uri: String,
     pub method: HttpMethod,
-    pub input: SchemaType,
+    pub input: SchemaType, // TODO This should be optional
     pub returns: SchemaType,
 }
 

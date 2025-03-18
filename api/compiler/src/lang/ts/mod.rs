@@ -26,6 +26,7 @@ mod class;
 mod method;
 pub use method::*;
 pub use class::*;
+use quote::ToTokens;
 
 /// Represents a typescript interface
 /// 
@@ -144,10 +145,18 @@ impl From<&SchemaType> for Type {
 	}
 }
 
+
+impl ToTokens for Type{
+	fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+		
+	}
+}
+
+// TODO check if the custom structs are in the schema
 pub fn codegen(config_path:&str,file_path:&str) -> crate::Result<()>{
 	let contents = fs::read_to_string(config_path)?;
 	let schema = ApiSchema::parse(&contents)?;
-	dbg!(&schema);
+
 	let mut interfaces = vec![];
 
 	for (_,(key,value)) in schema.structs.iter().enumerate(){
@@ -162,14 +171,25 @@ pub fn codegen(config_path:&str,file_path:&str) -> crate::Result<()>{
 		contents.push_str(&interface.gen_code());
 	}
 
+	// Create client
+	let mut client = Class::new("Client");
+
+	// Create route endpoint functions 
 	for (name,endpoint) in schema.endpoints{
-		MethodBuilder::new(&name)
-			.is_async();
+		let method = MethodBuilder::from_endpoint(&name, endpoint);
+		
+		client.push_method(method);
 	}
+
+	contents.push_str(&format!("{}",client));
 	
 	fs::write(file_path, contents)?;
 
 	Ok(())
+}
+
+fn gen_endpoints(){
+	
 }
 
 /// Parse typescript interface fields

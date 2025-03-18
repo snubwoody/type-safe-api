@@ -1,7 +1,9 @@
 use core_types::Endpoint;
+use quote::quote;
 
 use super::{Field, Type};
 
+// TODO add jsdoc
 /// A method on a class
 #[derive(Debug,Clone,PartialEq, Eq, PartialOrd, Ord)]
 pub struct Method{
@@ -38,14 +40,35 @@ impl std::fmt::Display for Method{
 			}
 		}
 		
-		write!(f,"{}",self.body)?;
-		write!(f,"\n}}")
+		write!(f,"\t\t{}",self.body)?;
+		write!(f,"\n\t}}")
 	}
 }
 
 /// Builder pattern for [`Method`]
 /// 
 /// # Example
+/// 
+/// ```
+/// use compiler::ts::{MethodBuilder,Method,Type};
+/// 
+/// let method = MethodBuilder::new("is_player_alive")
+/// 	.is_async()
+/// 	.returns(Type::Boolean)
+/// 	.add_param("player_id",Type::Number)
+/// 	.build();
+/// ```
+/// 
+/// The generated typescript code would be 
+/// 
+/// ```typescript
+/// // Dummy class 
+/// class World{
+/// 	async is_player_alive(player_id: number): Promise<boolean>{
+/// 
+/// 	}
+/// }
+/// ```
 #[derive(Debug,Clone)]
 pub struct MethodBuilder{
 	is_async: bool,
@@ -114,6 +137,7 @@ impl MethodBuilder{
 		self
 	}
 
+	
 	/// Build into a [`Method`]
 	pub fn build(self) -> Method{
 		Method { 
@@ -124,11 +148,94 @@ impl MethodBuilder{
 			body: self.body 
 		}
 	}
+	
+	/// Create a new method from an [`Endpoint`].
+	pub fn from_endpoint(name:&str,endpoint: Endpoint) -> Method{
+		let param_type:Type = endpoint.input.into();
+		let return_type:Type = endpoint.returns.into();
+
+		let mut method_body = format!(
+			r#"try {{
+			const response = await fetch('{}');
+			if (response.ok){{
+				const user: {} = await response.json();
+				return user; 
+			}} 
+			else{{
+				// throw error body
+				const error = response.json();
+				throw error;
+			}}
+			}} catch(err) {{
+				throw err;
+			}}"#,
+			endpoint.uri,
+			return_type
+		);
+
+		let uri = endpoint.uri;
+
+		let method_body = quote::quote!{
+			try{
+				const response = await fetch(#uri);
+				if (response.ok){
+					const user: User = await response.json();
+					return user;
+				}
+				else{
+					const error = response.json();
+					throw error;
+				}
+			} catch (err){
+				throw err;
+			}
+		};
+
+		let method = MethodBuilder::new(&name)
+			.add_param("body", param_type)
+			.returns(return_type)
+			.is_async()
+			.body(&method_body.to_string())
+			.build();
+
+		method	
+	}
 }
 
 #[cfg(test)]
 mod tests{
+	use core_types::{HttpMethod, SchemaType};
 	use super::*;
+
+	#[test]
+	fn get_method_gen(){
+		let endpoint = Endpoint{
+			uri: "https::/youtube.com/user".to_owned(),
+			method: HttpMethod::Get,
+			input: SchemaType::Boolean,
+			returns: SchemaType::String
+		};
+
+		let method = MethodBuilder::from_endpoint("get_user", endpoint);
+
+		let body = quote! {
+			try{
+				const response = await fetch("https::/youtube.com/user");
+				if (response.ok){
+					const body: string = await response.json();
+					return body;
+				}else{
+					const error = await response.json();
+					throw error;
+				}
+			} catch (err){
+				throw err;
+			}
+		}.to_string();
+
+		println!("{:#?}",method.body);
+		assert_eq!(method.body,body);
+	}
 
 	#[test]
 	fn async_method(){
