@@ -123,8 +123,11 @@ impl std::fmt::Display for Type{
 impl From<SchemaType> for Type {
 	fn from(value: SchemaType) -> Self {
 		match value {
-			SchemaType::Int => Self::Number,
+			SchemaType::Int | 
+			SchemaType::Float => Self::Number,
 			SchemaType::String => Self::String,
+			SchemaType::Boolean => Self::Boolean,
+			SchemaType::Struct(ident) => Self::Custom(ident)
 		}
 	}
 }
@@ -132,15 +135,19 @@ impl From<SchemaType> for Type {
 impl From<&SchemaType> for Type {
 	fn from(value: &SchemaType) -> Self {
 		match value {
-			&SchemaType::Int => Self::Number,
+			&SchemaType::Int|
+			&SchemaType::Float => Self::Number,
 			&SchemaType::String => Self::String,
+			&SchemaType::Boolean => Self::Boolean,
+			&SchemaType::Struct(ref ident) => Self::Custom(ident.clone())
 		}
 	}
 }
 
 pub fn codegen(config_path:&str,file_path:&str) -> crate::Result<()>{
 	let contents = fs::read_to_string(config_path)?;
-	let schema: ApiSchema = serde_yaml::from_str(&contents)?;
+	let schema = ApiSchema::parse(&contents)?;
+	dbg!(&schema);
 	let mut interfaces = vec![];
 
 	for (_,(key,value)) in schema.structs.iter().enumerate(){

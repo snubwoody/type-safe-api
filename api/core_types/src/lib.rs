@@ -2,7 +2,21 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use quote::quote;
 
-#[derive(Debug, Serialize, Deserialize)]
+/// The api schema
+/// 
+/// # Example schema
+/// ```yaml
+/// version: 0.1.0
+/// schema_diff: none
+/// 
+/// structs:
+///   User:
+///     id: string,
+///     email: string,
+///     phone_number: string
+/// ```
+#[derive(Debug, Serialize, Deserialize,Clone,PartialEq,Default)]
+#[serde(deny_unknown_fields)]
 pub struct ApiSchema {
     pub version: String,
     pub schema_diff: String,
@@ -10,8 +24,16 @@ pub struct ApiSchema {
     pub endpoints: HashMap<String, Endpoint>,
 }
 
+impl ApiSchema{
+	pub fn parse(contents: &str) -> Result<Self,serde_yaml::Error>{
+		let schema:Self = serde_yaml::from_str(contents)?;
+		
+		Ok(schema)
+	}
+}
+
 /// A url endpoint
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Clone,PartialEq)]
 pub struct Endpoint {
 	pub uri: String,
     pub method: HttpMethod,
@@ -19,11 +41,16 @@ pub struct Endpoint {
     pub returns: SchemaType,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Clone,PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum SchemaType {
     Int,
+	Float,
     String,
+	Boolean,
+	// Custom struct 
+	#[serde(untagged)]
+	Struct(String)
 }
 
 impl SchemaType{
@@ -32,11 +59,18 @@ impl SchemaType{
 		match &self {
 			&Self::Int => quote!{ i32 },
 			&Self::String => quote!{ String },
+			&Self::Boolean => quote!{ bool },
+			&Self::Float => quote!{ f32 },
+			&Self::Struct(name) => {
+				// TODO test this
+				let ident = syn::Ident::new(name, proc_macro2::Span::call_site());
+                quote! { #ident }
+			},
 		}
 	}
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize,Clone, Copy,PartialEq)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum HttpMethod {
     Get,

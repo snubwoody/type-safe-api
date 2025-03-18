@@ -27,5 +27,5 @@ depending on the status code
 
 - Add include directive for file splitting
 - Add an option to define the client name
-- Add builders for all types
 - Convert to camel case or snake case depending on the language
+- Add a custom error type as enum-like structure

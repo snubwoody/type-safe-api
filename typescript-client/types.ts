@@ -1,17 +1,17 @@
+export interface Error{
+	details: string,
+	description: string,
+	code: number,
+}
+
 export interface UserPayload{
 	id: string,
 }
 
-export interface Error{
-	description: string,
-	details: string,
-	code: number,
-}
-
 export interface User{
-	name: string,
 	created_at: string,
 	email: string,
+	name: string,
 	id: number,
 }
 
