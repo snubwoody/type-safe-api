@@ -1,21 +1,16 @@
-import type {Error,User,UserPayload} from './types';
+import {Client, UserPayload} from './types';
 
 
-export class Client{
-	checksum: string
-	constructor(checksum:string){}
-	
-	async create_user(payload: UserPayload): Promise<User | Error>{
-		const data = await fetch("/user",{
-			headers:{
-				'Api-Checksum':this.checksum
-			},
-			method:'POST',
-			body:JSON.stringify(payload)
-		})
-	
-		return await data.json()
-	}
-}
 
 let client = new Client('')
+
+let payload:UserPayload = {
+	id: '',
+	
+}
+
+try{
+	const result = await client.create_user(payload)
+} catch(e){
+
+}

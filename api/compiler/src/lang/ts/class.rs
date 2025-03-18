@@ -29,7 +29,7 @@ impl Class{
 
 impl std::fmt::Display for Class{
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		writeln!(f,"class {} {{",self.name)?;
+		writeln!(f,"export class {} {{",self.name)?;
 
 		for field in &self.fields{
 			writeln!(f,"\t{}",field)?;
@@ -76,5 +76,6 @@ mod tests{
 			"}",
 		);
 		println!("{}",&class);
+		todo!()
 	}
 }

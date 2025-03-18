@@ -1,8 +1,5 @@
-export interface User{
-	id: number,
-	email: string,
-	name: string,
-	created_at: string,
+export interface UserPayload{
+	id: string,
 }
 
 export interface Error{
@@ -11,11 +8,14 @@ export interface Error{
 	description: string,
 }
 
-export interface UserPayload{
-	id: string,
+export interface User{
+	id: number,
+	name: string,
+	email: string,
+	created_at: string,
 }
 
-class Client {
+export class Client {
 	checksum: string
 	constructor(checksum: string,) {		this . checksum = checksum ;
 	}
