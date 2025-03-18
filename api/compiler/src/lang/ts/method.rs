@@ -1,3 +1,5 @@
+use core_types::Endpoint;
+
 use super::{Field, Type};
 
 /// A method on a class

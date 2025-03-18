@@ -154,6 +154,11 @@ pub fn codegen(config_path:&str,file_path:&str){
 	for interface in interfaces{
 		contents.push_str(&interface.gen_code());
 	}
+
+	for (name,endpoint) in schema.endpoints{
+		MethodBuilder::new(&name)
+			.is_async();
+	}
 	
 	fs::write(file_path, contents).unwrap();
 }

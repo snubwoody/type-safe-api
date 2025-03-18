@@ -1,5 +1,5 @@
-use compiler::ts::codegen;
+use compiler::ts;
 
 fn main(){
-	codegen("examples/schema.yml","../typescript-client/types.ts");
+	ts::codegen("examples/schema.yml","../typescript-client/types.ts");
 }

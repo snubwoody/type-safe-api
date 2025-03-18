@@ -15,8 +15,8 @@ pub struct ApiSchema {
 pub struct Endpoint {
 	pub uri: String,
     pub method: HttpMethod,
-    pub input: String,
-    pub returns: String,
+    pub input: SchemaType,
+    pub returns: SchemaType,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
