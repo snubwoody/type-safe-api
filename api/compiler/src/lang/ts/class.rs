@@ -1,4 +1,4 @@
-use super::{Field, TsType,Method};
+use super::{Field,Method};
 
 /// A typescript class
 #[derive(Debug,Clone,PartialEq, Eq, PartialOrd, Ord)]
@@ -29,14 +29,14 @@ impl Class{
 
 impl std::fmt::Display for Class{
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f,"class {} {{\n",self.name)?;
+		writeln!(f,"class {} {{",self.name)?;
 
 		for field in &self.fields{
-			write!(f,"\t{}\n",field)?;
+			writeln!(f,"\t{}",field)?;
 		}
 
 		for method in &self.methods{
-			write!(f,"\t{}\n",method)?;
+			writeln!(f,"\t{}",method)?;
 		}
 
 		write!(f,"}}")
@@ -45,7 +45,7 @@ impl std::fmt::Display for Class{
 
 #[cfg(test)]
 mod tests{
-	use crate::ts::MethodBuilder;
+	use crate::ts::{MethodBuilder, TsType};
 	use super::*;
 
 	#[test]

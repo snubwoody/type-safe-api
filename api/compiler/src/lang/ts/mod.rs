@@ -117,7 +117,7 @@ impl std::fmt::Display for TsType{
 			Self::String => f.write_str("string"), 
 			Self::Boolean => f.write_str("boolean"), 
 			Self::Array(_type) => f.write_str(&format!("{}[]",_type)), 
-			Self::Custom(_type) => f.write_str(&format!("{}",_type)), 
+			Self::Custom(_type) => f.write_str(&_type.to_string()), 
 		}
 	}
 }
@@ -141,7 +141,7 @@ impl From<&SchemaType> for TsType {
 			&SchemaType::Float => Self::Number,
 			&SchemaType::String => Self::String,
 			&SchemaType::Boolean => Self::Boolean,
-			&SchemaType::Struct(ref ident) => Self::Custom(ident.clone())
+			SchemaType::Struct(ident) => Self::Custom(ident.clone())
 		}
 	}
 }
@@ -149,25 +149,25 @@ impl From<&SchemaType> for TsType {
 
 impl ToTokens for TsType{
 	fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-		match &self {
-			&Self::Number => {
+		match self {
+			Self::Number => {
 				let ident = proc_macro2::Ident::new("number", Span::call_site());
 				tokens.append(ident);
 			}
-			&Self::String => {
+			Self::String => {
 				let ident = proc_macro2::Ident::new("string", Span::call_site());
 				tokens.append(ident);
 			}
-			&Self::Array(name) => {
+			Self::Array(name) => {
 				let ident = proc_macro2::Ident::new(&format!("{}[]",name), Span::call_site());
 				tokens.append(ident);
 			}
-			&Self::Boolean => {
+			Self::Boolean => {
 				let ident = proc_macro2::Ident::new("boolean", Span::call_site());
 				tokens.append(ident);
 			}
-			&Self::Custom(name) => {
-				let ident = proc_macro2::Ident::new(&name, Span::call_site());
+			Self::Custom(name) => {
+				let ident = proc_macro2::Ident::new(name, Span::call_site());
 				tokens.append(ident);
 			}
 		}
@@ -181,8 +181,8 @@ pub fn codegen(config_path:&str,file_path:&str) -> crate::Result<()>{
 
 	let mut interfaces = vec![];
 
-	for (_,(key,value)) in schema.structs.iter().enumerate(){
-		let mut interface = Interface::new(&key);
+	for (key,value) in schema.structs.iter(){
+		let mut interface = Interface::new(key);
 		let fields = parse_interface_fields(value);
 		interface.push_fields(fields);
 		interfaces.push(interface);
@@ -195,13 +195,26 @@ pub fn codegen(config_path:&str,file_path:&str) -> crate::Result<()>{
 
 	// Create client
 	let mut client = Class::new("Client");
+	client.push_field(Field::new("checksum", TsType::String));
+
+	let constructor = MethodBuilder::new("constructor")
+		.add_param("checksum", TsType::String)
+		.body(
+			&quote! {
+				this.checksum = checksum;
+			}.to_string()
+		)
+		.build();
+	
+	client.push_method(constructor);
 
 	// Create route endpoint functions 
 	for (name,endpoint) in schema.endpoints{
-		let method = MethodBuilder::from_endpoint(&name, endpoint);
+		let method = MethodBuilder::from_endpoint(&name, &endpoint);
 		
 		client.push_method(method);
 	}
+
 
 	contents.push_str(&format!("{}",client));
 	
@@ -210,17 +223,13 @@ pub fn codegen(config_path:&str,file_path:&str) -> crate::Result<()>{
 	Ok(())
 }
 
-fn gen_endpoints(){
-	
-}
-
 /// Parse typescript interface fields
 fn parse_interface_fields(values: &HashMap<String,SchemaType>) -> Vec<Field>{
 	let mut fields = vec![];
 
-	for (_,(key,value)) in values.iter().enumerate(){
+	for (key,value) in values.iter(){
 		let _type = TsType::from(value);
-		let field = Field::new(&key, _type);
+		let field = Field::new(key, _type);
 		fields.push(field);
 	}
 

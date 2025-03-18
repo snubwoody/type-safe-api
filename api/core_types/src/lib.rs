@@ -1,6 +1,7 @@
+use proc_macro2::Span;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use quote::quote;
+use quote::{quote, ToTokens, TokenStreamExt};
 
 /// The api schema
 /// 
@@ -56,12 +57,12 @@ pub enum SchemaType {
 impl SchemaType{
 	/// Parse into a native rust type
 	pub fn parse(&self) -> proc_macro2::TokenStream{
-		match &self {
-			&Self::Int => quote!{ i32 },
-			&Self::String => quote!{ String },
-			&Self::Boolean => quote!{ bool },
-			&Self::Float => quote!{ f32 },
-			&Self::Struct(name) => {
+		match self {
+			Self::Int => quote!{ i32 },
+			Self::String => quote!{ String },
+			Self::Boolean => quote!{ bool },
+			Self::Float => quote!{ f32 },
+			Self::Struct(name) => {
 				// TODO test this
 				let ident = syn::Ident::new(name, proc_macro2::Span::call_site());
                 quote! { #ident }
@@ -77,4 +78,28 @@ pub enum HttpMethod {
     Post,
     Patch,
     Delete,
+}
+
+
+impl ToTokens for HttpMethod{
+	fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+		match self {
+			Self::Get => {
+				let ident = proc_macro2::Literal::string("GET",);
+				tokens.append(ident);
+			},
+			Self::Post => {
+				let ident = proc_macro2::Literal::string("POST");
+				tokens.append(ident);
+			},
+			Self::Patch => {
+				let ident = proc_macro2::Literal::string("PATCH");
+				tokens.append(ident);
+			},
+			Self::Delete => {
+				let ident = proc_macro2::Literal::string("DELETE");
+				tokens.append(ident);
+			},
+		}
+	}
 }

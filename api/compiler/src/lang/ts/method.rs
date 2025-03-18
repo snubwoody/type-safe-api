@@ -1,6 +1,5 @@
-use core_types::Endpoint;
-use indoc::{formatdoc, indoc};
-use quote::quote;
+use core_types::{Endpoint, HttpMethod};
+use proc_macro2::TokenStream;
 
 use super::{Field, TsType};
 
@@ -56,9 +55,9 @@ impl std::fmt::Display for Method{
 		match &self.returns {
 			Some(_type) => {
 				if self.is_async{
-					write!(f,": Promise<{}> {{\n",_type)?;
+					writeln!(f,": Promise<{}> {{",_type)?;
 				}else {
-					write!(f,": {} {{\n",_type)?;
+					writeln!(f,": {} {{",_type)?;
 				}
 			},
 			None =>{
@@ -174,17 +173,23 @@ impl MethodBuilder{
 			body: self.body 
 		}
 	}
-	
+
 	/// Create a new method from an [`Endpoint`].
-	pub fn from_endpoint(name:&str,endpoint: Endpoint) -> Method{
-		let param_type:TsType = endpoint.input.into();
-		let return_type:TsType = endpoint.returns.into();
-
-		let uri = endpoint.uri;
-
+	pub fn from_endpoint(name:&str,endpoint: &Endpoint) -> Method{
+		let input_type:TsType = endpoint.input.clone().into();
+		let return_type:TsType = endpoint.returns.clone().into();
+		let http_method = endpoint.method;
+		let uri = endpoint.uri.clone();
+		
 		let method_body = quote::quote!{
 			try{
-				const response = await fetch(#uri);
+				const response = await fetch(#uri,{
+					headers:{
+						"Api-Checksum": this.checksum
+					},
+					method: #http_method,
+					body: JSON.stringify(payload)
+				});
 				if (response.ok){
 					const body: #return_type = await response.json();
 					return body;
@@ -197,16 +202,72 @@ impl MethodBuilder{
 				throw err;
 			}
 		};
-
-		let method = MethodBuilder::new(&name)
-			.add_param("body", param_type)
+		
+		
+		
+		MethodBuilder::new(name)
+			.add_param("payload", input_type)
 			.returns(return_type)
 			.is_async()
 			.body(&method_body.to_string())
-			.build();
-
-		method	
+			.build()	
 	}
+}
+
+impl MethodBuilder{
+	
+	fn gen_get_method(endpoint: &Endpoint) -> TokenStream{
+		let return_type:TsType = endpoint.returns.clone().into();
+		let uri = endpoint.uri.clone();
+		
+		quote::quote!{
+			try{
+				const response = await fetch(#uri,{
+					headers:{
+						"Api-Checksum": this.checksum
+					}
+				});
+				if (response.ok){
+					const body: #return_type = await response.json();
+					return body;
+				}
+				else{
+					const error = await response.json();
+					throw error;
+				}
+			} catch (err){
+				throw err;
+			}
+		}
+	}
+
+	fn gen_post_method(endpoint: &Endpoint) -> TokenStream{
+		let input_type:TsType = endpoint.input.clone().into();
+		let return_type:TsType = endpoint.returns.clone().into();
+		let uri = endpoint.uri.clone();
+		
+		quote::quote!{
+			try{
+				const response = await fetch(#uri,{
+					headers:{
+						"Api-Checksum": this.checksum
+					},
+					method: "POST"
+				});
+				if (response.ok){
+					const body: #return_type = await response.json();
+					return body;
+				}
+				else{
+					const error = await response.json();
+					throw error;
+				}
+			} catch (err){
+				throw err;
+			}
+		}
+	}
+	
 }
 
 #[cfg(test)]
