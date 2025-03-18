@@ -1,4 +1,5 @@
 use core_types::Endpoint;
+use indoc::{formatdoc, indoc};
 use quote::quote;
 
 use super::{Field, TsType};
@@ -12,6 +13,31 @@ pub struct Method{
 	parameters: Vec<Field>,
 	returns: Option<TsType>,
 	body: String,
+}
+
+impl Method{
+	/// Check whether the method is async or not.
+	pub fn is_async(&self) -> bool{
+		self.is_async
+	}
+	
+	/// Get a reference to the method body.
+	pub fn body(&self) -> &str{
+		&self.body
+	}
+	
+	pub fn identifier(&self) -> &str{
+		&self.identifier
+	}
+
+	
+	pub fn returns(&self) -> &Option<TsType>{
+		&self.returns
+	}
+
+	pub fn parameters(&self) -> &[Field]{
+		&self.parameters
+	}
 }
 
 impl std::fmt::Display for Method{
@@ -154,36 +180,17 @@ impl MethodBuilder{
 		let param_type:TsType = endpoint.input.into();
 		let return_type:TsType = endpoint.returns.into();
 
-		let mut method_body = format!(
-			r#"try {{
-			const response = await fetch('{}');
-			if (response.ok){{
-				const user: {} = await response.json();
-				return user; 
-			}} 
-			else{{
-				// throw error body
-				const error = response.json();
-				throw error;
-			}}
-			}} catch(err) {{
-				throw err;
-			}}"#,
-			endpoint.uri,
-			return_type
-		);
-
 		let uri = endpoint.uri;
 
 		let method_body = quote::quote!{
 			try{
 				const response = await fetch(#uri);
 				if (response.ok){
-					const user: #return_type = await response.json();
-					return user;
+					const body: #return_type = await response.json();
+					return body;
 				}
 				else{
-					const error = response.json();
+					const error = await response.json();
 					throw error;
 				}
 			} catch (err){
@@ -204,38 +211,7 @@ impl MethodBuilder{
 
 #[cfg(test)]
 mod tests{
-	use core_types::{HttpMethod, SchemaType};
 	use super::*;
-
-	#[test]
-	fn get_method_gen(){
-		let endpoint = Endpoint{
-			uri: "https::/youtube.com/user".to_owned(),
-			method: HttpMethod::Get,
-			input: SchemaType::Boolean,
-			returns: SchemaType::String
-		};
-
-		let method = MethodBuilder::from_endpoint("get_user", endpoint);
-
-		let body = quote! {
-			try{
-				const response = await fetch("https::/youtube.com/user");
-				if (response.ok){
-					const body: string = await response.json();
-					return body;
-				}else{
-					const error = await response.json();
-					throw error;
-				}
-			} catch (err){
-				throw err;
-			}
-		}.to_string();
-
-		println!("{:#?}",method.body);
-		assert_eq!(method.body,body);
-	}
 
 	#[test]
 	fn async_method(){

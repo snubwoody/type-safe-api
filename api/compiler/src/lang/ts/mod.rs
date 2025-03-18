@@ -26,7 +26,8 @@ mod class;
 mod method;
 pub use method::*;
 pub use class::*;
-use quote::ToTokens;
+use proc_macro2::Span;
+use quote::{quote, ToTokens, TokenStreamExt};
 
 /// Represents a typescript interface
 /// 
@@ -148,7 +149,28 @@ impl From<&SchemaType> for TsType {
 
 impl ToTokens for TsType{
 	fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-		
+		match &self {
+			&Self::Number => {
+				let ident = proc_macro2::Ident::new("number", Span::call_site());
+				tokens.append(ident);
+			}
+			&Self::String => {
+				let ident = proc_macro2::Ident::new("string", Span::call_site());
+				tokens.append(ident);
+			}
+			&Self::Array(name) => {
+				let ident = proc_macro2::Ident::new(&format!("{}[]",name), Span::call_site());
+				tokens.append(ident);
+			}
+			&Self::Boolean => {
+				let ident = proc_macro2::Ident::new("boolean", Span::call_site());
+				tokens.append(ident);
+			}
+			&Self::Custom(name) => {
+				let ident = proc_macro2::Ident::new(&name, Span::call_site());
+				tokens.append(ident);
+			}
+		}
 	}
 }
 
